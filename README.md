@@ -94,3 +94,70 @@ To address the imbalanced data, a resampling technique was applied. Random overs
 bootstrapping and k-nearest neighbours to balance the classes. After resampling, a 50-50 distribution of target classes is achieved.
 ![image](https://github.com/user-attachments/assets/a3e4c366-6edd-4888-a25b-54f3daefb5b6)
 ![image](https://github.com/user-attachments/assets/e09f0930-4038-4366-803b-5b1c87bbd629)
+
+### 4.6. Model Building and Assessment
+The following models were built using resampled data.
+
+**Logistic Regression**
+
+A logistic regression model was built using the variables determined during initial modelling, after eliminating multicollinearity (using VIF) and insignificant variables (based on p-value).
+![image](https://github.com/user-attachments/assets/143d2907-c5c8-4935-94dd-c63e0d0b442b)
+Compared to the initial model, the accuracy is lower but precision and recall improved significantly.
+The model also indicated feature importance based on standardized coefficients.
+![image](https://github.com/user-attachments/assets/f5c4a150-b79f-4a8b-a17f-d6812ae3c5f0)
+
+**Decision Tree**
+
+The decision tree model was trained on resampled data using all variables.
+![image](https://github.com/user-attachments/assets/17079746-71e5-4a40-8809-7342f313063b)
+![image](https://github.com/user-attachments/assets/bcb49a78-0bd4-4ae4-a63e-784c8685cdc3)
+The decision tree splits the data according to only one feature - total income amount – at different points. Looking at the first terminal node from the left, the default rate is the lowest at 18% when the total income amount is less than $156,000. On the other hand, The default rate is highest when the income is > $156,000 and <$380,000.
+
+**Random Forest**
+A random forest model was trained on resampled data using all variables and default settings.
+![image](https://github.com/user-attachments/assets/6bff5078-a562-462b-bf97-4065535b0689)
+Running the model on the train set yielded good results, but on the validation set, the model performed rather poorly, with precision and recall at 24 and 14% respectively. This suggests overfitting.
+The top five predictors of loan default as determined by the random forest model are (1) total income amount, (2) external source 3, (3) external source 2, (4) external source 1, and (5) number of 60 days past due in the client’s social circle.
+![image](https://github.com/user-attachments/assets/101cc6ff-9cfc-45ae-9b90-582dffacbfa1)
+
+**Model Comparison**
+
+![image](https://github.com/user-attachments/assets/dcc76b4e-e976-421d-8fbe-12c2301f11c3)
+
+Among the three models, the decision tree can be ruled out as it has very low precision despite having high accuracy. Between the logistic regression and random forest models, logistic regression performed better in terms of recall, while random forest was superior in accuracy and precision. Judging from the F1 score, the logistic regression ultimately performed the best among the three.
+However, since random forests have many advantages such as being good at handling large datasets, an attempt was made to train a random forest model using the training data determined by the logistic regression model.
+
+**Random Forest - Model Tuning**
+
+*Optimise Training Data*
+
+A random forest model was built using features in the logistic regression data set – free of multicollinearity and insignificant variables.
+![image](https://github.com/user-attachments/assets/8c3f1b8a-b9a0-4712-b4ea-e1122ded401b)
+The F1 score improved over the previous random forest model, and is also higher than the logistic regression model.
+
+*Optimise ntree and mtry*
+
+The number of trees grown (ntree) and number of predictors sampled for splitting at each node (mtry) were also optimized. The parameter values that minimised OOB error were ntree = 500 and mtry = 5.
+![image](https://github.com/user-attachments/assets/3a8b8834-c9c5-4845-80b2-ff25340f756e)
+
+**Final Model**
+
+The final model was built using features from the logistic regression data set and optimised parameters.
+![image](https://github.com/user-attachments/assets/95277e50-7105-4db8-a7c4-232d85d9a3ab)
+The performance of this optimized random forest model is the best among the previous models, with a recall of 60.2% and F1 score of 26.1%.
+The top five features are (1) EXT_SOURCE_3, (2) EXT_SOURCE_2, (3) DEF_60_CNT_SOCIAL_CIRCLE, (4) EXT_SOURCE_1, (5) YEARS_EMPLOYED.
+![image](https://github.com/user-attachments/assets/7b905cb1-b52f-402e-9d97-df6600af2a17)
+
+## 5. Evaluation
+### 5.1. Results
+![image](https://github.com/user-attachments/assets/d3890994-a4dc-4009-9a2f-5b3c03e95ae5)
+The final model achieves all three objectives. From historical data, the observed default rate is 0.08%. The model identified important features that contribute towards default, the top 5 being EXT_SOURCE_3, EXT_SOURCE_2, DEF_60_CNT_SOCIAL_CIRCLE, EXT_SOURCE_1, and YEARS_EMPLOYED. Scoring the final model on future data will make predictions on whether a client defaults or not, allowing the FI to take mitigative action.
+### 5.2. Challenges
+Several challenges were faced during this project.
+1. Computational limitations resulted in unnecessary delays. Model building and scoring was time consuming and computationally demanding. 
+2. Vague data descriptions limited data understanding in the initial stages of the project. A deeper understanding of each column could have resulted in more meaningful manipulation of values. 
+3. High dimensionality posed some difficulty in building models – they were prone to overfitting and over complexity.
+### 5.3. Improvements
+Using more data in model building may be helpful. This project only considered loan application data, but credit bureau data previous loan data might add more insight. Another improvement is to experiment with a higher ntree value in the random forest model. This model only considered 500 due to computational constraints, but increasing it could potentially reduce error.
+## 6. Conclusion
+This project aims to build a predictive model using logistic regression, decision tree and random forest to predict loan default. The final model used a random forest algorithm, optimised in training data, ntree and mtry. It achieved an accuracy of 72.5%, precision of 16.7%, recall of 60.2% and F1 score of 26.1%. The top 5 features that contribute to loan default are EXT_SOURCE_3, EXT_SOURCE_2, DEF_60_CNT_SOCIAL_CIRCLE, EXT_SOURCE_1, and YEARS_EMPLOYED.
